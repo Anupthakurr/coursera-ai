@@ -293,29 +293,50 @@ const CourseCard = ({
             </button>
           </>
         ) : (
-          <button
-            onClick={() => onGenerateContent(course.cid)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "10px",
-              background: "rgba(124,58,237,0.15)",
-              border: "1px solid rgba(124,58,237,0.3)",
-              color: "#a78bfa",
-              fontSize: "13px",
-              fontWeight: "600",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "rgba(124,58,237,0.25)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "rgba(124,58,237,0.15)")
-            }
-          >
-            ⚙ Generate Content
-          </button>
+          <>
+            <button
+              onClick={() => onEnroll(course.cid)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+                border: "none",
+                color: "white",
+                fontSize: "13px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              ⊕ Enroll & Study
+            </button>
+            <button
+              onClick={() => onGenerateContent(course.cid)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "10px",
+                background: "rgba(124,58,237,0.15)",
+                border: "1px solid rgba(124,58,237,0.3)",
+                color: "#a78bfa",
+                fontSize: "13px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(124,58,237,0.25)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "rgba(124,58,237,0.15)")
+              }
+            >
+              ⚙ Generate AI Content
+            </button>
+          </>
         )}
 
         {!isPreview && (

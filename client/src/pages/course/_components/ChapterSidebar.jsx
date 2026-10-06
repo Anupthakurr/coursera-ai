@@ -24,9 +24,6 @@ const ChapterSidebar = ({
     totalTopics > 0 ? Math.round((completedCount / totalTopics) * 100) : 0;
 
   const totalChapterCount = course?.courseJson?.chapters?.length || 0;
-  const builtChapters = course?.status === "READY"
-    ? totalChapterCount // all chapters unlocked when course is complete
-    : (course?.chaptersBuilt || 0);
 
   const handleTopicClickInternal = (chIndex, tIndex) => {
     onTopicClick(chIndex, tIndex);
@@ -184,7 +181,7 @@ const ChapterSidebar = ({
               <p
                 style={{ color: "white", fontSize: "13px", fontWeight: "600" }}
               >
-                {builtChapters}/{course?.courseJson?.chapters?.length} Chapters
+                {totalChapterCount} Chapters
               </p>
             </div>
           </div>
@@ -231,7 +228,14 @@ const ChapterSidebar = ({
         <div style={{ padding: "8px", flex: 1 }}>
           {course?.courseJson?.chapters?.map((chapter, chIndex) => {
             const isActiveChapter = chIndex === activeChapterIndex;
-            const hasContent = chIndex < builtChapters;
+            const chapterTopicKeys = (chapter.topics || []).map(
+              (_, tIdx) => `${chIndex}_${tIdx}`
+            );
+            const isChapterCompleted =
+              chapterTopicKeys.length > 0 &&
+              chapterTopicKeys.every((key) =>
+                enrollment?.completedTopics?.includes(key)
+              );
 
             // ── quiz badge for this chapter ───────────────
             const chapterQuiz = quizStatuses?.find(
@@ -251,13 +255,20 @@ const ChapterSidebar = ({
                     background: isActiveChapter
                       ? "rgba(124,58,237,0.15)"
                       : "transparent",
-                    cursor: hasContent ? "pointer" : "not-allowed",
-                    opacity: hasContent ? 1 : 0.4,
+                    cursor: "pointer",
+                    opacity: 1,
                     transition: "background 0.2s",
                   }}
-                  onClick={() =>
-                    hasContent && handleTopicClickInternal(chIndex, 0)
-                  }
+                  onMouseEnter={(e) => {
+                    if (!isActiveChapter)
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.03)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActiveChapter)
+                      e.currentTarget.style.background = "transparent";
+                  }}
+                  onClick={() => handleTopicClickInternal(chIndex, 0)}
                 >
                   {/* chapter number circle */}
                   <div
@@ -267,7 +278,7 @@ const ChapterSidebar = ({
                       borderRadius: "50%",
                       background: isActiveChapter
                         ? "linear-gradient(135deg, #7c3aed, #6d28d9)"
-                        : hasContent
+                        : isChapterCompleted
                           ? "rgba(34,197,94,0.2)"
                           : "rgba(255,255,255,0.06)",
                       display: "flex",
@@ -275,25 +286,21 @@ const ChapterSidebar = ({
                       justifyContent: "center",
                       color: isActiveChapter
                         ? "white"
-                        : hasContent
+                        : isChapterCompleted
                           ? "#4ade80"
-                          : "#6b7280",
+                          : "#9ca3af",
                       fontSize: "11px",
                       fontWeight: "700",
                       flexShrink: 0,
                     }}
                   >
-                    {hasContent && !isActiveChapter ? "✓" : chIndex + 1}
+                    {isChapterCompleted && !isActiveChapter ? "✓" : chIndex + 1}
                   </div>
 
                   {/* chapter name */}
                   <p
                     style={{
-                      color: isActiveChapter
-                        ? "white"
-                        : hasContent
-                          ? "#d1d5db"
-                          : "#6b7280",
+                      color: isActiveChapter ? "white" : "#d1d5db",
                       fontSize: "12px",
                       fontWeight: isActiveChapter ? "600" : "400",
                       lineHeight: "1.4",
@@ -337,23 +344,10 @@ const ChapterSidebar = ({
                       skipped
                     </span>
                   )}
-
-                  {/* locked icon */}
-                  {!hasContent && (
-                    <span
-                      style={{
-                        marginLeft: "auto",
-                        color: "#374151",
-                        fontSize: "10px",
-                      }}
-                    >
-                      🔒
-                    </span>
-                  )}
                 </div>
 
-                {/* topics list — show when active AND has content */}
-                {isActiveChapter && hasContent && (
+                {/* topics list — show when active */}
+                {isActiveChapter && (
                   <div style={{ paddingLeft: "12px", marginTop: "2px" }}>
                     {chapter.topics?.map((topic, tIndex) => {
                       const isActiveTopic = tIndex === activeTopicIndex;
