@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -323,7 +323,6 @@ const StepBuildCourse = () => {
         {course?.courseJson?.chapters?.map((chapter, i) => {
           const isBuilt = i < displayChaptersBuilt;
           const isCurrent = i === displayChaptersBuilt && !isComplete;
-          const isLocked = i > displayChaptersBuilt;
 
           return (
             <div
@@ -377,7 +376,7 @@ const StepBuildCourse = () => {
                     flexShrink: 0,
                   }}
                 >
-                  {isBuilt ? "âœ“" : i + 1}
+                  {isBuilt ? "✓" : i + 1}
                 </div>
                 <span
                   style={{
@@ -387,16 +386,16 @@ const StepBuildCourse = () => {
                       ? "#4ade80"
                       : isCurrent
                         ? "#a78bfa"
-                        : "#374151",
+                        : "#9ca3af",
                     letterSpacing: "0.5px",
                   }}
                 >
-                  {isBuilt ? "DONE" : isCurrent ? "NEXT" : "LOCKED"}
+                  {isBuilt ? "DONE" : isCurrent ? "NEXT" : "READY"}
                 </span>
               </div>
               <p
                 style={{
-                  color: isLocked ? "#374151" : "#d1d5db",
+                  color: "#d1d5db",
                   fontSize: "11px",
                   lineHeight: "1.4",
                 }}

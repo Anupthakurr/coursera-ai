@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   generateQuizApi,
@@ -25,9 +26,21 @@ const ChapterContent = ({
   activeTopicIndex,
   onMarkComplete,
 }) => {
+  const navigate = useNavigate();
   const chapter = course?.courseContent?.[activeChapterIndex];
   const chapterLayout = course?.courseJson?.chapters?.[activeChapterIndex];
   const videos = chapter?.youtubeVideo || [];
+
+  const topicList =
+    chapter?.courseData?.content && chapter.courseData.content.length > 0
+      ? chapter.courseData.content
+      : chapterLayout?.topics?.map((topic) => ({
+          topic:
+            typeof topic === "object"
+              ? topic.topic || topic.title || topic.name || JSON.stringify(topic)
+              : topic,
+          htmlContent: `<p style="color: #d1d5db; line-height: 1.6;">${chapterLayout?.about || "Topic overview is ready. You can study this topic and mark it as complete, or generate full AI content anytime."}</p>`,
+        })) || [];
   const GEMINI_MODELS = [
       "gemini-2.5-flash",
       "gemini-2.5-flash-lite",
@@ -220,7 +233,7 @@ const ChapterContent = ({
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  if (!chapter)
+  if (!chapter && !chapterLayout)
     return (
       <div
         style={{
@@ -561,7 +574,7 @@ const ChapterContent = ({
         </div>
 
         {/* ── topic cards loop ── */}
-        {chapter?.courseData?.content?.map((topicData, tIndex) => {
+        {topicList.map((topicData, tIndex) => {
           const isActive = tIndex === activeTopicIndex;
 
           return (
